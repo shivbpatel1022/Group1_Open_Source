@@ -1,0 +1,26 @@
+### 🟢 Register User
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "meet",
+  "email": "meet@test.com",
+  "password": "123456"
+}
+
+###
+
+### 🔵 Login User
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "meet@test.com",
+  "password": "123456"
+}
+
+###
+
+### 🟡 Protected Route (PUT TOKEN BELOW)
+GET http://localhost:3000/protected
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQ4NGMwMWFkZjcxMmY1MDFhZTc3ZjIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NTc4MzQwMCwiZXhwIjoxNzc1ODY5ODAwfQ.-5jyHj8WIkLWk3Z3EaliwGVzTr-B-uP17g3yPME8XOA
