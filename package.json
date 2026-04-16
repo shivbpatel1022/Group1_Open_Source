@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev src/server.ts"
+    "dev": "ts-node-dev src/server.ts",
+    "test": "node --require ts-node/register/transpile-only tests/run-tests.ts"
   },
   "keywords": [],
   "author": "",
