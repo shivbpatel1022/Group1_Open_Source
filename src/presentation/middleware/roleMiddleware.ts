@@ -1,9 +1,16 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Response } from "express";
+import { User } from "../../domain/entities/User";
+import { AuthRequest } from "../types/AuthRequest";
 
-export const isAdmin = (req: any, res: Response, next: NextFunction) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied (admin only)" });
-  }
+export const allowRoles = (roles: User["role"][]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
-  next();
+    next();
+  };
 };
+
+export const isAdmin = allowRoles(["admin", "super"]);
+export const isSuperUser = allowRoles(["super"]);
