@@ -1,26 +1,83 @@
-### 🟢 Register User
+### Register user
 POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "meet",
-  "email": "meet@test.com",
-  "password": "123456"
+  "username": "student1",
+  "email": "student1@example.com",
+  "password": "Password123"
 }
 
-###
-
-### 🔵 Login User
+### Login user
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "meet@test.com",
-  "password": "123456"
+  "email": "student1@example.com",
+  "password": "Password123"
 }
 
-###
+### Create post (replace TOKEN)
+POST http://localhost:3000/api/posts
+Authorization: Bearer TOKEN
+Content-Type: application/json
 
-### 🟡 Protected Route (PUT TOKEN BELOW)
-GET http://localhost:3000/protected
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQ4NGMwMWFkZjcxMmY1MDFhZTc3ZjIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NTc4MzQwMCwiZXhwIjoxNzc1ODY5ODAwfQ.-5jyHj8WIkLWk3Z3EaliwGVzTr-B-uP17g3yPME8XOA
+{
+  "title": "My first forum post",
+  "content": "This is my post content"
+}
+
+### List posts
+GET http://localhost:3000/api/posts
+
+### Update post (replace POST_ID + TOKEN)
+PUT http://localhost:3000/api/posts/POST_ID
+Authorization: Bearer TOKEN
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "content": "Updated content"
+}
+
+### Toggle like on post (replace POST_ID + TOKEN)
+POST http://localhost:3000/api/posts/POST_ID/like
+Authorization: Bearer TOKEN
+
+### Add comment (replace POST_ID + TOKEN)
+POST http://localhost:3000/api/posts/POST_ID/comments
+Authorization: Bearer TOKEN
+Content-Type: application/json
+
+{
+  "content": "Great post"
+}
+
+### List comments (replace POST_ID)
+GET http://localhost:3000/api/posts/POST_ID/comments
+
+### Update comment (replace POST_ID + COMMENT_ID + TOKEN)
+PUT http://localhost:3000/api/posts/POST_ID/comments/COMMENT_ID
+Authorization: Bearer TOKEN
+Content-Type: application/json
+
+{
+  "content": "Updated comment"
+}
+
+### Delete comment (replace POST_ID + COMMENT_ID + TOKEN)
+DELETE http://localhost:3000/api/posts/POST_ID/comments/COMMENT_ID
+Authorization: Bearer TOKEN
+
+### Admin stats (requires admin/super token)
+GET http://localhost:3000/api/admin/stats
+Authorization: Bearer ADMIN_TOKEN
+
+### Update user role (requires admin/super token)
+PATCH http://localhost:3000/api/admin/users/USER_ID/role
+Authorization: Bearer ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "role": "super"
+}

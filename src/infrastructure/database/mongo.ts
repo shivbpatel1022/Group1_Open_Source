@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
+import { env } from "../../config/env";
+import { logger } from "../logging/logger";
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/forumsDB");
-    console.log("MongoDB connected ");
+    await mongoose.connect(env.mongoUri);
+    logger.info("db_connected");
   } catch (error) {
-    console.error("DB connection error:", error);
+    logger.error("db_connection_error", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     process.exit(1);
   }
 };
