@@ -12,7 +12,9 @@ export class UserRepository implements IUserRepository {
       username: savedUser.username,
       email: savedUser.email,
       password: savedUser.password,
-      role: savedUser.role as "user" | "admin",
+      role: savedUser.role as User["role"],
+      createdAt: savedUser.createdAt,
+      updatedAt: savedUser.updatedAt,
     };
   }
 
@@ -26,7 +28,47 @@ export class UserRepository implements IUserRepository {
       username: user.username,
       email: user.email,
       password: user.password,
-      role: user.role as "user" | "admin",
+      role: user.role as User["role"],
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const user = await UserModel.findById(id);
+    if (!user) return null;
+
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      role: user.role as User["role"],
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async updateRole(id: string, role: User["role"]): Promise<User | null> {
+    const user = await UserModel.findByIdAndUpdate(id, { role }, { new: true });
+    if (!user) return null;
+
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      role: user.role as User["role"],
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async countAll(): Promise<number> {
+    return UserModel.countDocuments();
+  }
+
+  async countByRole(role: User["role"]): Promise<number> {
+    return UserModel.countDocuments({ role });
   }
 }
