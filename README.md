@@ -189,15 +189,14 @@ npm run test:coverage
 
 ## Team Contributions
 
-Use this section for your final submission write-up if the rubric asks for contribution notes:
+- Meet Gaekwad
+  Contributed the majority of the backend feature implementation, including project architecture setup, authentication and JWT flow, posts, comments, likes, admin analytics, role-management endpoints, route wiring, logging, Bruno API collection, configuration fixes, and final project polish.
 
-- Backend API implementation: routes, controllers, use-cases, repositories
-- Authentication and authorization: JWT and role-based access
-- API testing: Bruno collection and environment configuration
-- Automated testing: Node test suite and coverage
-- Project management evidence: Jira materials maintained separately by the team
+- Shiv Patel
+  Contributed automated test coverage and final validation work, including auth/posts tests, comments/likes controller edge cases, admin-related test additions, and final integration checks before submission.
 
-Replace or expand these bullets with each teammate's exact responsibilities before submission if your instructor expects named contributions.
+- Vivek Chaudhary
+  Contributed documentation and supporting validation work, including setup and usage documentation, API/testing guide content, demo walkthrough preparation, and admin/super-role coverage additions.
 
 ## External Evidence Checklist
 
