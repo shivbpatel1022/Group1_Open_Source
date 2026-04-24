@@ -50,7 +50,11 @@ export class UserRepository implements IUserRepository {
   }
 
   async updateRole(id: string, role: User["role"]): Promise<User | null> {
-    const user = await UserModel.findByIdAndUpdate(id, { role }, { new: true });
+    const user = await UserModel.findByIdAndUpdate(
+      id,
+      { role },
+      { returnDocument: "after" },
+    );
     if (!user) return null;
 
     return {

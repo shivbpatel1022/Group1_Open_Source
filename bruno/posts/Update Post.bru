@@ -1,0 +1,26 @@
+meta {
+  name: Update Post
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/posts/{{postId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Updated title",
+    "content": "Updated content"
+  }
+}

@@ -40,8 +40,11 @@ test("comment use-cases delegate create, list, update, delete, and fetch operati
       return comment;
     },
     async () => {
-      assert.deepEqual(await createComment("post-1", "First!", "user-1"), comment);
-    }
+      assert.deepEqual(
+        await createComment("post-1", "First!", "user-1"),
+        comment,
+      );
+    },
   );
 
   await withPatchedMethod(
@@ -50,7 +53,7 @@ test("comment use-cases delegate create, list, update, delete, and fetch operati
     async () => [comment],
     async () => {
       assert.deepEqual(await listCommentsByPost("post-1"), [comment]);
-    }
+    },
   );
 
   await withPatchedMethod(
@@ -62,8 +65,11 @@ test("comment use-cases delegate create, list, update, delete, and fetch operati
       return { ...comment, content: "Edited" };
     },
     async () => {
-      assert.deepEqual(await updateComment("comment-1", "Edited"), { ...comment, content: "Edited" });
-    }
+      assert.deepEqual(await updateComment("comment-1", "Edited"), {
+        ...comment,
+        content: "Edited",
+      });
+    },
   );
 
   await withPatchedMethod(
@@ -72,7 +78,7 @@ test("comment use-cases delegate create, list, update, delete, and fetch operati
     async () => true,
     async () => {
       assert.equal(await deleteComment("comment-1"), true);
-    }
+    },
   );
 
   await withPatchedMethod(
@@ -81,7 +87,7 @@ test("comment use-cases delegate create, list, update, delete, and fetch operati
     async () => comment,
     async () => {
       assert.deepEqual(await getCommentById("comment-1"), comment);
-    }
+    },
   );
 });
 
@@ -97,7 +103,7 @@ test("toggleLike creates and removes likes while returning the latest count", as
       await withPatchedMethod(
         LikeRepository.prototype as unknown as Record<string, unknown>,
         "create",
-        async (postId, userId) => {
+        async (postId: string, userId: string) => {
           createCalls.push({ postId, userId });
         },
         async () => {
@@ -110,11 +116,11 @@ test("toggleLike creates and removes likes while returning the latest count", as
                 liked: true,
                 likesCount: 3,
               });
-            }
+            },
           );
-        }
+        },
       );
-    }
+    },
   );
 
   await withPatchedMethod(
@@ -125,7 +131,7 @@ test("toggleLike creates and removes likes while returning the latest count", as
       await withPatchedMethod(
         LikeRepository.prototype as unknown as Record<string, unknown>,
         "delete",
-        async (postId, userId) => {
+        async (postId: string, userId: string) => {
           deleteCalls.push({ postId, userId });
         },
         async () => {
@@ -138,11 +144,11 @@ test("toggleLike creates and removes likes while returning the latest count", as
                 liked: false,
                 likesCount: 2,
               });
-            }
+            },
           );
-        }
+        },
       );
-    }
+    },
   );
 
   assert.deepEqual(createCalls, [{ postId: "post-1", userId: "user-1" }]);
@@ -150,16 +156,54 @@ test("toggleLike creates and removes likes while returning the latest count", as
 });
 
 test("canModifyComment honors super users, authors, and post owners with elevated roles", () => {
-  assert.equal(canModifyComment({ userId: "super-1", role: "super" }, "author-1", "owner-1"), true);
-  assert.equal(canModifyComment({ userId: "author-1", role: "user" }, "author-1", "owner-1"), true);
-  assert.equal(canModifyComment({ userId: "owner-1", role: "admin" }, "author-1", "owner-1"), true);
-  assert.equal(canModifyComment({ userId: "owner-1", role: "user" }, "author-1", "owner-1"), false);
-  assert.equal(canModifyComment({ userId: "outsider", role: "admin" }, "author-1", "owner-1"), false);
+  assert.equal(
+    canModifyComment(
+      { userId: "super-1", role: "super" },
+      "author-1",
+      "owner-1",
+    ),
+    true,
+  );
+  assert.equal(
+    canModifyComment(
+      { userId: "author-1", role: "user" },
+      "author-1",
+      "owner-1",
+    ),
+    true,
+  );
+  assert.equal(
+    canModifyComment(
+      { userId: "owner-1", role: "admin" },
+      "author-1",
+      "owner-1",
+    ),
+    true,
+  );
+  assert.equal(
+    canModifyComment(
+      { userId: "owner-1", role: "user" },
+      "author-1",
+      "owner-1",
+    ),
+    false,
+  );
+  assert.equal(
+    canModifyComment(
+      { userId: "outsider", role: "admin" },
+      "author-1",
+      "owner-1",
+    ),
+    false,
+  );
 });
 
 test("comment controllers reject unauthorized users and missing resources", async () => {
   const unauthorizedResponse = createMockResponse();
-  await createCommentController({ params: { postId: "post-1" } } as any, unauthorizedResponse as any);
+  await createCommentController(
+    { params: { postId: "post-1" } } as any,
+    unauthorizedResponse as any,
+  );
   assert.equal(unauthorizedResponse.statusCode, 401);
   assert.deepEqual(unauthorizedResponse.body, { message: "Unauthorized" });
 
@@ -175,12 +219,12 @@ test("comment controllers reject unauthorized users and missing resources", asyn
           body: { content: "Hi" },
           user: { userId: "user-1", role: "user" },
         } as any,
-        missingPostResponse as any
+        missingPostResponse as any,
       );
 
       assert.equal(missingPostResponse.statusCode, 404);
       assert.deepEqual(missingPostResponse.body, { message: "Post not found" });
-    }
+    },
   );
 
   await withPatchedMethod(
@@ -195,12 +239,14 @@ test("comment controllers reject unauthorized users and missing resources", asyn
           body: { content: "Edit" },
           user: { userId: "user-1", role: "user" },
         } as any,
-        missingCommentResponse as any
+        missingCommentResponse as any,
       );
 
       assert.equal(missingCommentResponse.statusCode, 404);
-      assert.deepEqual(missingCommentResponse.body, { message: "Comment not found" });
-    }
+      assert.deepEqual(missingCommentResponse.body, {
+        message: "Comment not found",
+      });
+    },
   );
 });
 
@@ -215,37 +261,128 @@ test("comment controllers block unauthorized edits and deletes", async () => {
       authorId: "author-1",
     }),
     async () => {
-      const updateResponse = createMockResponse();
-      await updateCommentController(
-        {
-          params: { commentId: "comment-1" },
-          body: { content: "Edit" },
-          user: { userId: "other-user", role: "admin" },
-        } as any,
-        updateResponse as any
+      await withPatchedMethod(
+        PostRepository.prototype as unknown as Record<string, unknown>,
+        "findById",
+        async () => ({
+          id: "post-1",
+          title: "Post",
+          content: "Content",
+          authorId: "owner-1",
+        }),
+        async () => {
+          const updateResponse = createMockResponse();
+          await updateCommentController(
+            {
+              params: { commentId: "comment-1" },
+              body: { content: "Edit" },
+              user: { userId: "other-user", role: "admin" },
+            } as any,
+            updateResponse as any,
+          );
+
+          assert.equal(updateResponse.statusCode, 403);
+          assert.deepEqual(updateResponse.body, {
+            message: "You cannot modify this comment",
+          });
+
+          const deleteResponse = createMockResponse();
+          await deleteCommentController(
+            {
+              params: { commentId: "comment-1" },
+              user: { userId: "other-user", role: "user" },
+            } as any,
+            deleteResponse as any,
+          );
+
+          assert.equal(deleteResponse.statusCode, 403);
+          assert.deepEqual(deleteResponse.body, {
+            message: "You cannot delete this comment",
+          });
+        },
       );
+    },
+  );
+});
 
-      assert.equal(updateResponse.statusCode, 403);
-      assert.deepEqual(updateResponse.body, { message: "You cannot modify this comment" });
+test("comment controllers allow post owners with elevated roles to manage comments", async () => {
+  await withPatchedMethod(
+    CommentRepository.prototype as unknown as Record<string, unknown>,
+    "findById",
+    async () => ({
+      id: "comment-1",
+      postId: "post-1",
+      content: "Hello",
+      authorId: "author-1",
+    }),
+    async () => {
+      await withPatchedMethod(
+        PostRepository.prototype as unknown as Record<string, unknown>,
+        "findById",
+        async () => ({
+          id: "post-1",
+          title: "Post",
+          content: "Content",
+          authorId: "owner-1",
+        }),
+        async () => {
+          await withPatchedMethod(
+            CommentRepository.prototype as unknown as Record<string, unknown>,
+            "update",
+            async () => ({
+              id: "comment-1",
+              postId: "post-1",
+              content: "Edited by owner",
+              authorId: "author-1",
+            }),
+            async () => {
+              const updateResponse = createMockResponse();
+              await updateCommentController(
+                {
+                  params: { commentId: "comment-1" },
+                  body: { content: "Edited by owner" },
+                  user: { userId: "owner-1", role: "admin" },
+                } as any,
+                updateResponse as any,
+              );
 
-      const deleteResponse = createMockResponse();
-      await deleteCommentController(
-        {
-          params: { commentId: "comment-1" },
-          user: { userId: "other-user", role: "user" },
-        } as any,
-        deleteResponse as any
+              assert.equal(updateResponse.statusCode, 200);
+              assert.equal(updateResponse.body.content, "Edited by owner");
+            },
+          );
+
+          await withPatchedMethod(
+            CommentRepository.prototype as unknown as Record<string, unknown>,
+            "delete",
+            async () => true,
+            async () => {
+              const deleteResponse = createMockResponse();
+              await deleteCommentController(
+                {
+                  params: { commentId: "comment-1" },
+                  user: { userId: "owner-1", role: "admin" },
+                } as any,
+                deleteResponse as any,
+              );
+
+              assert.equal(deleteResponse.statusCode, 200);
+              assert.deepEqual(deleteResponse.body, {
+                message: "Comment deleted",
+              });
+            },
+          );
+        },
       );
-
-      assert.equal(deleteResponse.statusCode, 403);
-      assert.deepEqual(deleteResponse.body, { message: "You cannot delete this comment" });
-    }
+    },
   );
 });
 
 test("toggleLikeController validates auth and post existence", async () => {
   const unauthorizedResponse = createMockResponse();
-  await toggleLikeController({ params: { postId: "post-1" } } as any, unauthorizedResponse as any);
+  await toggleLikeController(
+    { params: { postId: "post-1" } } as any,
+    unauthorizedResponse as any,
+  );
   assert.equal(unauthorizedResponse.statusCode, 401);
   assert.deepEqual(unauthorizedResponse.body, { message: "Unauthorized" });
 
@@ -260,11 +397,11 @@ test("toggleLikeController validates auth and post existence", async () => {
           params: { postId: "post-404" },
           user: { userId: "user-1", role: "user" },
         } as any,
-        missingPostResponse as any
+        missingPostResponse as any,
       );
 
       assert.equal(missingPostResponse.statusCode, 404);
       assert.deepEqual(missingPostResponse.body, { message: "Post not found" });
-    }
+    },
   );
 });

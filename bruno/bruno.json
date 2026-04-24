@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "name": "Group1 Forums Backend",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git",
+    ".vs"
+  ]
+}

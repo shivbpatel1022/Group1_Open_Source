@@ -5,12 +5,12 @@ type AsyncFn<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult;
 export const createMockResponse = () => {
   const response = {
     statusCode: 200,
-    body: undefined as unknown,
+    body: undefined as any,
     status(code: number) {
       this.statusCode = code;
       return this;
     },
-    json(payload: unknown) {
+    json(payload: any) {
       this.body = payload;
       return this;
     },
@@ -23,15 +23,19 @@ export const withPatchedMethod = async <
   TObject extends Record<string, unknown>,
   TKey extends keyof TObject & string,
   TArgs extends unknown[],
-  TResult
+  TResult,
 >(
   target: TObject,
   methodName: TKey,
   replacement: AsyncFn<TArgs, TResult>,
-  run: () => Promise<void> | void
+  run: () => Promise<void> | void,
 ) => {
   const original = target[methodName];
-  assert.equal(typeof original, "function", `${methodName} must be a function to patch`);
+  assert.equal(
+    typeof original,
+    "function",
+    `${methodName} must be a function to patch`,
+  );
 
   (target as Record<string, unknown>)[methodName] = replacement;
 
